@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nexus Followers – Free Social Followers Farming</title>
+  <meta name="description" content="Nexus Followers – Claim free TikTok, Instagram & Facebook followers. Monetize your social handles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Delivery Modal -->
+  <div id="delivery-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">✅</div>
+      <div class="font-bold text-lg" style="margin-bottom:0.5rem;">Claim Submitted!</div>
+      <p class="text-sm" style="color:var(--text-muted);margin-bottom:1.25rem;line-height:1.5;">
+        Your free followers have been queued.<br>
+        <strong style="color:var(--primary);">They will be delivered within the next 72 hours.</strong>
+      </p>
+      <div id="modal-claim-summary" class="text-sm" style="background:var(--bg-elevated);border-radius:8px;padding:0.75rem;margin-bottom:1.25rem;border:1px solid var(--border);"></div>
+      <button class="btn btn-primary w-full" onclick="closeDeliveryModal()">Got it</button>
+    </div>
+  </div>
+
+  <!-- ==================== AUTH SCREEN ==================== -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="logo">NF</div>
+      <h1 class="text-2xl font-bold text-center" style="margin-bottom:0.25rem;">Nexus Followers</h1>
+      <p class="text-sm text-center" style="color:var(--text-muted);margin-bottom:1rem;">
+        Free Followers Farming Platform
+      </p>
+
+      <div class="bonus-banner">
+        🎁 Unlimited Free Followers for New Users
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2" style="margin-bottom:1.25rem;">
+        <button id="tab-login" class="btn btn-primary flex-1" onclick="switchAuthTab('login')">Login</button>
+        <button id="tab-register" class="btn btn-secondary flex-1" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="login-email" class="input" placeholder="you@example.com" required />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="login-password" class="input" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-full btn-lg" style="margin-top:0.5rem;">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="hidden">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" class="input" placeholder="Alex Creator" required />
+        </div>
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" class="input" placeholder="you@example.com" required />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" class="input" placeholder="Min. 6 chars · not numbers only" required minlength="6" />
+        </div>
+        <button type="submit" class="btn btn-primary w-full btn-lg" style="margin-top:0.5rem;">
+          Create Account & Start Claiming
+        </button>
+        <p class="text-xs text-center" style="color:var(--text-muted);margin-top:1rem;">
+          By registering you agree to the Nexus Followers Terms of Service.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== APP SCREEN ==================== -->
+  <div id="app-screen" class="app-container hidden">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="flex items-center gap-3">
+        <div id="header-avatar" class="user-avatar">A</div>
+        <div>
+          <div id="header-name" class="font-semibold" style="font-size:0.95rem;">User</div>
+          <div class="text-xs" style="color:var(--text-muted);">Nexus Followers</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="handleLogout()" class="btn btn-sm btn-secondary" title="Logout">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- ========== HOME PAGE ========== -->
+    <div id="page-home" class="page active">
+      <!-- Balance Card -->
+      <div class="balance-card" style="margin-bottom:1.1rem;">
+        <div class="flex justify-between items-center" style="margin-bottom:0.4rem;">
+          <span class="text-sm" style="color:var(--text-muted);">FOLLOWER CREDITS</span>
+          <span class="badge badge-green">● Unlimited</span>
+        </div>
+        <div class="flex items-end gap-2">
+          <span id="home-balance" class="text-3xl font-bold">∞</span>
+          <span class="text-sm" style="color:var(--text-muted);margin-bottom:0.3rem;">Credits</span>
+        </div>
+        <div class="flex justify-between items-center" style="margin-top:0.9rem;">
+          <div class="text-sm" style="color:var(--text-muted);">
+            Total Claimed <strong id="home-total-claimed" style="color:var(--text);">0</strong>
+          </div>
+          <div class="text-sm" style="color:var(--text-muted);">
+            Verified <strong id="home-verified" style="color:var(--text);">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Welcome bonus notice -->
+      <div id="welcome-notice" class="card" style="margin-bottom:1.1rem;display:none;border-color:rgba(0,212,170,0.35);">
+        <div class="flex items-center gap-3">
+          <div style="font-size:1.5rem;">🎁</div>
+          <div>
+            <div class="font-semibold" style="color:var(--primary);">Welcome!</div>
+            <div class="text-sm" style="color:var(--text-muted);">Unlimited free follower claims are ready.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Claims Today</div>
+          <div class="stat-value" id="home-claims-today">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Monetized</div>
+          <div class="stat-value" id="home-monetized">0</div>
+        </div>
+      </div>
+
+      <!-- Quick Claim -->
+      <div class="card" style="margin-bottom:1.1rem;">
+        <div class="font-semibold" style="margin-bottom:0.85rem;">Quick Claim Free Followers</div>
+        <div class="flex gap-2" style="flex-wrap:wrap;">
+          <button class="btn btn-primary flex-1" style="min-width:90px;" onclick="switchPage('claim'); setPlatform('tiktok');">
+            TikTok
+          </button>
+          <button class="btn btn-primary flex-1" style="min-width:90px;" onclick="switchPage('claim'); setPlatform('instagram');">
+            Instagram
+          </button>
+          <button class="btn btn-primary flex-1" style="min-width:90px;" onclick="switchPage('claim'); setPlatform('facebook');">
+            Facebook
+          </button>
+        </div>
+      </div>
+
+      <!-- Platforms overview -->
+      <div class="card">
+        <div class="font-semibold" style="margin-bottom:0.75rem;">Supported Platforms</div>
+        <div class="platform-list">
+          <div class="platform-item">
+            <div class="platform-icon tiktok">♪</div>
+            <div class="platform-info">
+              <div class="font-semibold">TikTok</div>
+              <div class="text-xs" style="color:var(--text-muted);">100 – 10,000 free followers</div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="switchPage('claim'); setPlatform('tiktok');">Claim</button>
+          </div>
+          <div class="platform-item">
+            <div class="platform-icon instagram">📷</div>
+            <div class="platform-info">
+              <div class="font-semibold">Instagram</div>
+              <div class="text-xs" style="color:var(--text-muted);">100 – 10,000 free followers</div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="switchPage('claim'); setPlatform('instagram');">Claim</button>
+          </div>
+          <div class="platform-item">
+            <div class="platform-icon facebook">f</div>
+            <div class="platform-info">
+              <div class="font-semibold">Facebook</div>
+              <div class="text-xs" style="color:var(--text-muted);">100 – 10,000 free followers</div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="switchPage('claim'); setPlatform('facebook');">Claim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CLAIM PAGE ========== -->
+    <div id="page-claim" class="page">
+      <div class="font-semibold text-lg" style="margin-bottom:1rem;">Claim Free Followers</div>
+
+      <!-- Platform Selector -->
+      <div class="card" style="margin-bottom:1.1rem;">
+        <div class="text-sm" style="color:var(--text-muted);margin-bottom:0.6rem;">Select Platform</div>
+        <div class="platform-selector">
+          <button class="platform-btn active" id="plat-tiktok" onclick="setPlatform('tiktok')">
+            <span class="plat-emoji">♪</span> TikTok
+          </button>
+          <button class="platform-btn" id="plat-instagram" onclick="setPlatform('instagram')">
+            <span class="plat-emoji">📷</span> Instagram
+          </button>
+          <button class="platform-btn" id="plat-facebook" onclick="setPlatform('facebook')">
+            <span class="plat-emoji">f</span> Facebook
+          </button>
+        </div>
+      </div>
+
+      <!-- Claim Form -->
+      <div class="card" style="margin-bottom:1.1rem;">
+        <div class="input-group">
+          <label>Username / Handle</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix" id="handle-prefix">@</span>
+            <input type="text" id="claim-username" class="input" placeholder="yourusername" required style="padding-left:2.2rem;" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Gmail Address (for this handle)</label>
+          <input type="email" id="claim-gmail" class="input" placeholder="you@gmail.com" required />
+        </div>
+
+        <div class="input-group">
+          <label>Password (for this handle)</label>
+          <input type="password" id="claim-password" class="input" placeholder="Account password" required />
+        </div>
+
+        <div class="input-group">
+          <label>Followers Amount</label>
+          <div class="amount-options">
+            <button type="button" class="amount-btn" data-amount="100" onclick="selectAmount(100)">100</button>
+            <button type="button" class="amount-btn" data-amount="500" onclick="selectAmount(500)">500</button>
+            <button type="button" class="amount-btn active" data-amount="1000" onclick="selectAmount(1000)">1,000</button>
+            <button type="button" class="amount-btn" data-amount="2500" onclick="selectAmount(2500)">2,500</button>
+            <button type="button" class="amount-btn" data-amount="5000" onclick="selectAmount(5000)">5,000</button>
+            <button type="button" class="amount-btn" data-amount="10000" onclick="selectAmount(10000)">10,000</button>
+          </div>
+          <input type="hidden" id="claim-amount" value="1000" />
+          <p class="text-xs" style="color:var(--text-muted);margin-top:0.5rem;">
+            Free claim range: <strong>100 – 10,000</strong> followers
+          </p>
+        </div>
+
+        <div class="input-group">
+          <label>Cost</label>
+          <div class="cost-display">
+            <span id="claim-cost">0</span> Credits
+            <span class="badge badge-green" style="margin-left:0.5rem;">FREE · Unlimited</span>
+          </div>
+        </div>
+
+        <button id="claim-btn" class="btn btn-primary w-full btn-lg" onclick="submitClaim()">
+          Claim Free Followers
+        </button>
+
+        <p class="text-xs text-center" style="color:var(--text-muted);margin-top:0.85rem;">
+          Credits are unlimited · Free claims anytime
+        </p>
+      </div>
+
+      <!-- Verified Badge Card -->
+      <div class="card" style="margin-bottom:1.1rem;border-color:rgba(56,97,251,0.4);">
+        <div class="flex justify-between items-center" style="margin-bottom:0.75rem;">
+          <div class="font-semibold">Get Verified Badge ✓</div>
+          <span class="badge badge-blue">Verified</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-muted);margin-bottom:1rem;">
+          Request a verified badge for your social handle. Fill the same details and submit.
+        </p>
+
+        <div class="input-group">
+          <label>Platform</label>
+          <div class="platform-selector">
+            <button type="button" class="platform-btn active" id="vplat-tiktok" onclick="setVerifyPlatform('tiktok')">
+              <span class="plat-emoji">♪</span> TikTok
+            </button>
+            <button type="button" class="platform-btn" id="vplat-instagram" onclick="setVerifyPlatform('instagram')">
+              <span class="plat-emoji">📷</span> Instagram
+            </button>
+            <button type="button" class="platform-btn" id="vplat-facebook" onclick="setVerifyPlatform('facebook')">
+              <span class="plat-emoji">f</span> Facebook
+            </button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Username / Handle</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix" id="verify-handle-prefix">@</span>
+            <input type="text" id="verify-username" class="input" placeholder="yourusername" style="padding-left:2.2rem;" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Gmail Address (for this handle)</label>
+          <input type="email" id="verify-gmail" class="input" placeholder="you@gmail.com" />
+        </div>
+
+        <div class="input-group">
+          <label>Password (for this handle)</label>
+          <input type="password" id="verify-password" class="input" placeholder="Account password" />
+        </div>
+
+        <button class="btn btn-primary w-full btn-lg" onclick="submitVerify()">
+          Request Verified Badge
+        </button>
+      </div>
+
+      <!-- Monetization Card -->
+      <div class="card" style="margin-bottom:1.1rem;border-color:rgba(56,97,251,0.35);">
+        <div class="flex justify-between items-center" style="margin-bottom:0.75rem;">
+          <div class="font-semibold">Monetize Your Handles</div>
+          <span class="badge badge-blue">Earn</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-muted);margin-bottom:1rem;">
+          Request monetization for your social handle. Fill in your details to apply.
+        </p>
+
+        <div class="input-group">
+          <label>Platform</label>
+          <div class="platform-selector">
+            <button type="button" class="platform-btn active" id="mplat-tiktok" onclick="setMonetizePlatform('tiktok')">
+              <span class="plat-emoji">♪</span> TikTok
+            </button>
+            <button type="button" class="platform-btn" id="mplat-instagram" onclick="setMonetizePlatform('instagram')">
+              <span class="plat-emoji">📷</span> Instagram
+            </button>
+            <button type="button" class="platform-btn" id="mplat-facebook" onclick="setMonetizePlatform('facebook')">
+              <span class="plat-emoji">f</span> Facebook
+            </button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Username / Handle</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix" id="monetize-handle-prefix">@</span>
+            <input type="text" id="monetize-username" class="input" placeholder="yourusername" style="padding-left:2.2rem;" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Gmail Address (for this handle)</label>
+          <input type="email" id="monetize-gmail" class="input" placeholder="you@gmail.com" />
+        </div>
+
+        <div class="input-group">
+          <label>Password (for this handle)</label>
+          <input type="password" id="monetize-password" class="input" placeholder="Account password" />
+        </div>
+
+        <button class="btn btn-primary w-full btn-lg" onclick="submitMonetize()">
+          Request Monetization
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== HISTORY PAGE ========== -->
+    <div id="page-history" class="page">
+      <div class="flex justify-between items-center" style="margin-bottom:1rem;">
+        <div class="font-semibold text-lg">Claim History</div>
+        <span class="badge badge-blue" id="history-count">0</span>
+      </div>
+
+      <div id="history-list">
+        <!-- filled by JS -->
+      </div>
+
+      <div id="history-empty" class="card text-center" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
+        <div class="font-semibold">No claims yet</div>
+        <div class="text-sm" style="color:var(--text-muted);margin-top:0.3rem;">
+          Go to Claim and get your first free followers.
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PROFILE PAGE ========== -->
+    <div id="page-profile" class="page">
+      <div class="card" style="margin-bottom:1.1rem;text-align:center;">
+        <div id="profile-avatar" class="user-avatar" style="width:64px;height:64px;font-size:1.5rem;margin:0 auto 0.75rem;">A</div>
+        <div class="font-bold text-lg" id="profile-name">User</div>
+        <div class="text-sm" style="color:var(--text-muted);" id="profile-email">email@example.com</div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.1rem;">
+        <div class="flex justify-between" style="margin-bottom:0.5rem;">
+          <div class="text-xs" style="color:var(--text-muted);">Member Since</div>
+          <div class="font-semibold text-sm" id="profile-joined">—</div>
+        </div>
+        <div class="flex justify-between" style="margin-bottom:0.5rem;">
+          <div class="text-xs" style="color:var(--text-muted);">Total Claims</div>
+          <div class="font-semibold text-sm" id="profile-claims">0</div>
+        </div>
+        <div class="flex justify-between" style="margin-bottom:0.5rem;">
+          <div class="text-xs" style="color:var(--text-muted);">Verified Requests</div>
+          <div class="font-semibold text-sm" id="profile-verified">0</div>
+        </div>
+        <div class="flex justify-between">
+          <div class="text-xs" style="color:var(--text-muted);">Monetized Platforms</div>
+          <div class="font-semibold text-sm" id="profile-monetized">0</div>
+        </div>
+      </div>
+
+      <!-- Monetization status -->
+      <div class="card" style="margin-bottom:1.1rem;">
+        <div class="font-semibold" style="margin-bottom:0.75rem;">Monetization Status</div>
+        <div id="profile-monetize-list">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <button onclick="handleLogout()" class="btn btn-secondary w-full">
+        Logout
+      </button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="home">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Home
+      </button>
+      <button class="nav-item" data-page="claim">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Claim
+      </button>
+      <button class="nav-item" data-page="history">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        History
+      </button>
+      <button class="nav-item" data-page="profile">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Profile
+      </button>
+    </nav>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/telegram.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
